@@ -1,4 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Management Application
+
+A modern web-based project management application built with Next.js 15 and TypeScript. This application helps teams manage their projects, requirements, and tasks efficiently with a clean and intuitive interface.
+
+## Technologies Used
+
+### Frontend
+- **Next.js 15** - React framework with App Router for building full-stack web applications
+- **React 19** - JavaScript library for building user interfaces
+- **TypeScript** - For type-safe code
+- **Tailwind CSS** - For responsive and utility-first styling
+- **Shadcn/UI** - For modern and accessible UI components
+- **Headless UI** - For unstyled, accessible UI components
+- **Hero Icons** - For beautiful SVG icons
+- **React Hook Form** - For efficient form handling
+- **Zod** - For schema validation
+
+### Backend
+- **Prisma** - Next-generation ORM for Node.js and TypeScript
+- **Next.js API Routes** - For serverless API endpoints
+
+### Development Tools
+- **ESLint** - For code linting
+- **Turbopack** - For fast development builds
+- **PostCSS** - For transforming CSS with JavaScript
 
 ## Getting Started
 
@@ -16,9 +40,14 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Modern and responsive UI with Tailwind CSS
+- Type-safe development with TypeScript
+- Efficient form handling and validation
+- Database integration with Prisma
+- Fast development experience with Turbopack
+- Accessible components using Shadcn/UI and Headless UI
 
 ## Learn More
 
@@ -26,8 +55,6 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 
