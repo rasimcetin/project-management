@@ -1,0 +1,33 @@
+// This is your Prisma schema file
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Project {
+  id           String       @id @default(uuid())
+  name         String
+  description  String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  requirements Requirement[]
+}
+
+model Requirement {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  status      String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  priority    String    @default("MEDIUM")  // LOW, MEDIUM, HIGH
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id])
+  parentId    String?
+  parent      Requirement?  @relation("SubTasks", fields: [parentId], references: [id])
+  subtasks    Requirement[] @relation("SubTasks")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
