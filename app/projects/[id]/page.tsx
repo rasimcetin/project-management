@@ -68,17 +68,16 @@ const RequirementsSection = ({ requirements, projectId }: { requirements: Requir
   </div>
 );
 
-export default async function ProjectPage({
-  params,
-}: {
+export type ProjectPageProps = {
   params: { id: string };
-}) {
-  try {
-    const { id } = params;
+};
 
-    const project = await prisma.project.findUnique({
-      where: { id },
-    });
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  try {
+
+    const searchParams = await Promise.resolve(params);
+
+    const project = await prisma.project.findUnique({ where: { id: searchParams.id } });
 
     if (!project) {
       notFound();
