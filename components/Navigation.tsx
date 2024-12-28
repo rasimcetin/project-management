@@ -14,6 +14,7 @@ export function Navigation() {
   const navItems = [
     { href: '/', icon: HomeIcon, label: 'Dashboard' },
     { href: '/projects', icon: FolderIcon, label: 'Projects' },
+    { href: '/employees', icon: FolderIcon, label: 'Employees' },
   ];
 
   return (

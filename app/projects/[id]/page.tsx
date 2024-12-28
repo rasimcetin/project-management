@@ -74,7 +74,6 @@ export type ProjectPageProps = {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   try {
-
     const searchParams = await Promise.resolve(params);
 
     const project = await prisma.project.findUnique({ where: { id: searchParams.id } });
@@ -94,7 +93,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       </div>
     );
   } catch (error) {
-    console.error('Error loading project:', error);
-    throw new Error('Failed to load project');
+    console.error('Error in ProjectPage:', error);
+    if (error instanceof Error) {
+      throw new Error(`Failed to load project: ${error.message}`);
+    }
+    throw new Error('Failed to load project: An unexpected error occurred');
   }
 }

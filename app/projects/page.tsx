@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { PlusIcon } from '@heroicons/react/24/outline';
-import { getProjects } from '@/_actions/project';
+import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { getProjects, deleteProject } from '@/_actions/project';
+import { revalidatePath } from 'next/cache';
 
 type Project = {
   id: string;
@@ -11,6 +12,12 @@ type Project = {
 
 export default async function ProjectsPage() {
   const projects = await getProjects();
+
+  async function handleDelete(id: string) {
+    'use server';
+    await deleteProject(id);
+    revalidatePath('/projects');
+  }
 
   return (
     <div>
@@ -53,6 +60,9 @@ export default async function ProjectsPage() {
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Created
                       </th>
+                      <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
@@ -68,6 +78,16 @@ export default async function ProjectsPage() {
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {new Date(project.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right">
+                          <form action={handleDelete.bind(null, project.id)}>
+                            <button
+                              type="submit"
+                              className="text-red-600 hover:text-red-900 focus:outline-none"
+                            >
+                              <TrashIcon className="h-5 w-5" />
+                            </button>
+                          </form>
                         </td>
                       </tr>
                     ))}

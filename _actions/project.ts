@@ -60,3 +60,18 @@ export async function getProjects() {
     throw new Error('Failed to fetch projects');
   }
 }
+
+export async function deleteProject(id: string) {
+  try {
+    await prisma.project.delete({
+      where: { id },
+    });
+
+    revalidatePath('/projects');
+    return { message: 'Project deleted successfully' };
+  } catch (error) {
+    return {
+      message: 'Database Error: Failed to delete project.',
+    };
+  }
+}
