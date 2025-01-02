@@ -83,7 +83,11 @@ export async function createEmployee(prevState: EmployeeFormState, formData: For
   }
 }
 
-export async function updateEmployee(id: string, formData: FormData) {
+export async function updateEmployee(
+  id: string,
+  state: EmployeeFormState,
+  formData: FormData
+): Promise<EmployeeFormState> {
   const validatedFields = employeeSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -94,26 +98,18 @@ export async function updateEmployee(id: string, formData: FormData) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Invalid fields',
+      message: 'Missing Fields. Failed to Update Employee.',
     };
   }
 
   try {
     await prisma.employee.update({
       where: { id },
-      data: {
-        name: validatedFields.data.name,
-        email: validatedFields.data.email,
-        position: validatedFields.data.position,
-        department: validatedFields.data.department,
-      },
+      data: validatedFields.data,
     });
-
     revalidatePath('/employees');
-    return { message: 'Employee updated successfully' };
+    return { message: 'Updated Employee.' };
   } catch (error) {
-    return {
-      message: 'Database Error: Failed to update employee.',
-    };
+    return { message: 'Database Error: Failed to Update Employee.' };
   }
 }

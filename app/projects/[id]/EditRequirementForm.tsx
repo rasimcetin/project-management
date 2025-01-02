@@ -63,7 +63,7 @@ export default function EditRequirementForm({
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog onClose={onClose} className="relative z-50">
-        <Transition.Child
+        <Transition
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -73,10 +73,10 @@ export default function EditRequirementForm({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
-        </Transition.Child>
+        </Transition>
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Transition.Child
+          <Transition
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0 scale-95"
@@ -85,10 +85,13 @@ export default function EditRequirementForm({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="mx-auto max-w-lg w-full rounded-xl bg-white p-6 shadow-2xl">
-              <Dialog.Title className="text-xl font-semibold leading-6 text-gray-900 mb-4">
+            <Dialog 
+              className="mx-auto max-w-lg w-full rounded-xl bg-white p-6 shadow-2xl"
+              onClose={onClose}
+            >
+              <h2 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
                 Edit Requirement
-              </Dialog.Title>
+              </h2>
 
               {error && (
                 <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm flex items-center gap-2">
@@ -185,8 +188,8 @@ export default function EditRequirementForm({
                   </button>
                 </div>
               </form>
-            </Dialog.Panel>
-          </Transition.Child>
+            </Dialog>
+          </Transition>
         </div>
       </Dialog>
     </Transition>

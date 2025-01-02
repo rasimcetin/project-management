@@ -29,7 +29,8 @@ export default async function EmployeeDetailPage({
 }: {
   params: { id: string };
 }) {
-  const employee = await getEmployee(params.id);
+  const { id: employeeId } = await params;
+  const employee = await getEmployee(employeeId);
 
   return (
     <div className="container mx-auto py-6 max-w-4xl animate-in fade-in duration-500">
