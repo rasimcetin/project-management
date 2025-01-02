@@ -75,3 +75,37 @@ export async function deleteProject(id: string) {
     };
   }
 }
+
+export async function updateProject(
+  id: string,
+  formData: FormData,
+): Promise<ProjectFormState> {
+  const validatedFields = projectSchema.safeParse({
+    name: formData.get('name'),
+    description: formData.get('description'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Invalid fields',
+    };
+  }
+
+  try {
+    await prisma.project.update({
+      where: { id },
+      data: {
+        name: validatedFields.data.name,
+        description: validatedFields.data.description,
+      },
+    });
+
+    revalidatePath('/projects');
+    return { message: 'Project updated successfully' };
+  } catch (error) {
+    return {
+      message: 'Database Error: Failed to update project.',
+    };
+  }
+}

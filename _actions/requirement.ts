@@ -83,6 +83,17 @@ export async function createRequirement(
   }
 }
 
+export async function updateRequirement(id: string, data: any) {
+  try {
+    await prisma.requirement.update({
+      where: { id },
+      data,
+    });
+  } catch (error) {
+    throw new Error('Failed to update requirement');
+  }
+}
+
 export async function updateRequirementStatus(
   id: string,
   status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED',

@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { Disclosure, Transition } from '@headlessui/react';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronRightIcon, PencilIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { updateRequirementStatus } from '@/_actions/requirement';
 import type { Requirement } from '@/_actions/requirement';
+import EditRequirementForm from './EditRequirementForm';
 
 interface RequirementListProps {
   requirements: Requirement[];
@@ -30,6 +32,9 @@ const statusIcons = {
 };
 
 export default function RequirementList({ requirements, projectId }: RequirementListProps) {
+  const [editingRequirement, setEditingRequirement] = useState<Requirement | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   const handleStatusChange = async (id: string, status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED') => {
     try {
       await updateRequirementStatus(id, status, projectId);
@@ -49,56 +54,57 @@ export default function RequirementList({ requirements, projectId }: Requirement
       <Disclosure>
         {({ open }) => (
           <div>
-            <div className="flex items-center gap-x-4 border-b border-gray-100 bg-white p-4 transition-colors hover:bg-gray-50">
-              <div className="flex-auto">
-                <div className="flex items-center gap-x-3">
-                  <select
-                    value={requirement.status}
-                    onChange={(e) => handleStatusChange(requirement.id, e.target.value as any)}
-                    className={clsx(
-                      'rounded-lg px-3 py-1.5 text-xs font-medium ring-1 ring-inset transition-colors',
-                      'focus:outline-none focus:ring-2 focus:ring-blue-500',
-                      statusStyles[requirement.status as keyof typeof statusStyles]
-                    )}
-                  >
-                    <option value="PENDING">○ Pending</option>
-                    <option value="IN_PROGRESS">↻ In Progress</option>
-                    <option value="COMPLETED">✓ Completed</option>
-                  </select>
-                  <span
-                    className={clsx(
-                      'rounded-lg px-3 py-1.5 text-xs font-medium ring-1 ring-inset',
-                      priorityStyles[requirement.priority as keyof typeof priorityStyles]
-                    )}
-                  >
-                    {requirement.priority}
-                  </span>
-                  <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600">
-                    {requirement.title}
-                  </h3>
-                </div>
-                {requirement.description && (
-                  <p className="mt-2 text-sm text-gray-500">
-                    {requirement.description}
-                  </p>
+            <div className="flex items-center space-x-3 px-4 py-2">
+              <button
+                onClick={() => {
+                  const newStatus = requirement.status === 'COMPLETED'
+                    ? 'PENDING'
+                    : requirement.status === 'PENDING'
+                    ? 'IN_PROGRESS'
+                    : 'COMPLETED';
+                  handleStatusChange(requirement.id, newStatus);
+                }}
+                className={clsx(
+                  'flex-none rounded-full p-1',
+                  statusStyles[requirement.status]
                 )}
-                {requirement.subtasks?.length > 0 && (
-                  <Disclosure.Button className="mt-2 flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-blue-600">
-                    <ChevronRightIcon
-                      className={clsx(
-                        'h-4 w-4 transition-transform',
-                        open && 'rotate-90'
-                      )}
-                    />
-                    {requirement.subtasks.length} sub-requirements
-                  </Disclosure.Button>
+              >
+                {statusIcons[requirement.status]}
+              </button>
+              
+              <span className="flex-grow text-sm font-medium text-gray-900">
+                {requirement.title}
+              </span>
+
+              <button
+                onClick={() => {
+                  setEditingRequirement(requirement);
+                  setIsEditModalOpen(true);
+                }}
+                className="invisible group-hover:visible rounded p-1 text-gray-400 hover:text-gray-600"
+              >
+                <PencilIcon className="h-4 w-4" />
+              </button>
+              
+              <span
+                className={clsx(
+                  'rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset',
+                  priorityStyles[requirement.priority]
                 )}
-              </div>
-              <div className="flex items-center gap-2">
-                <time className="text-xs text-gray-500" dateTime={requirement.createdAt.toISOString()}>
-                  {new Date(requirement.createdAt).toLocaleDateString()}
-                </time>
-              </div>
+              >
+                {requirement.priority}
+              </span>
+
+              {requirement.subtasks?.length > 0 && (
+                <Disclosure.Button className="rounded p-1 hover:bg-gray-100">
+                  <ChevronRightIcon
+                    className={clsx(
+                      'h-5 w-5 text-gray-500',
+                      open && 'rotate-90 transform'
+                    )}
+                  />
+                </Disclosure.Button>
+              )}
             </div>
 
             {requirement.subtasks?.length > 0 && (
@@ -135,6 +141,20 @@ export default function RequirementList({ requirements, projectId }: Requirement
           <p className="text-sm font-medium text-gray-900">No requirements yet</p>
           <p className="text-sm text-gray-500">Create your first requirement to get started.</p>
         </div>
+      )}
+      {editingRequirement && (
+        <EditRequirementForm
+          requirement={editingRequirement}
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingRequirement(null);
+          }}
+          onUpdate={() => {
+            // Trigger a refresh of the requirements list
+            window.location.reload();
+          }}
+        />
       )}
     </div>
   );
