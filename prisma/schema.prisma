@@ -28,6 +28,7 @@ model Requirement {
   parentId    String?
   parent      Requirement?  @relation("SubTasks", fields: [parentId], references: [id])
   subtasks    Requirement[] @relation("SubTasks")
+  tasks       Task[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -38,6 +39,26 @@ model Employee {
   email      String   @unique
   position   String
   department String
+  tasks      Task[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  status      String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  priority    String    @default("MEDIUM")  // LOW, MEDIUM, HIGH
+  requirementId String
+  requirement Requirement @relation(fields: [requirementId], references: [id])
+  duration    Int
+  startDate   DateTime
+  endDate     DateTime
+  estimate    Int
+  actual      Int
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

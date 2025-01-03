@@ -62,8 +62,9 @@ export default function EditRequirementForm({
 
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog onClose={onClose} className="relative z-50">
+      <Dialog onClose={onClose} className="relative z-[100]">
         <Transition
+          show={isOpen}
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -77,6 +78,7 @@ export default function EditRequirementForm({
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Transition
+            show={isOpen}
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0 scale-95"
@@ -85,9 +87,9 @@ export default function EditRequirementForm({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog 
-              className="mx-auto max-w-lg w-full rounded-xl bg-white p-6 shadow-2xl"
-              onClose={onClose}
+            <Dialog.Panel 
+              className="mx-auto max-w-lg w-full rounded-xl bg-white p-6 shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
                 Edit Requirement
@@ -188,7 +190,7 @@ export default function EditRequirementForm({
                   </button>
                 </div>
               </form>
-            </Dialog>
+            </Dialog.Panel>
           </Transition>
         </div>
       </Dialog>
