@@ -3,7 +3,8 @@ import { getTask } from '@/_actions/task';
 import { CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
-  const task = await getTask(params.id);
+  const { id } = await params;
+  const task = await getTask(id);
 
   if (!task) {
     return <div>Task not found</div>;

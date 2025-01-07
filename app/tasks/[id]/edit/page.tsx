@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import { getTask, updateTask } from '@/_actions/task';
 
 export default function EditTaskPage({ params }: { params: { id: string } }) {
+  const { id: taskId } = params;
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [task, setTask] = useState<any>(null);
 
   useEffect(() => {
     async function fetchTask() {
-      const taskData = await getTask(params.id);
+      const taskData = await getTask(taskId);
       setTask(taskData);
     }
     fetchTask();
@@ -50,7 +51,11 @@ export default function EditTaskPage({ params }: { params: { id: string } }) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Edit Task</h1>
-      <form action={handleSubmit} className="space-y-6">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        handleSubmit(formData);
+      }} className="space-y-6">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Title

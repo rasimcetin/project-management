@@ -2,19 +2,13 @@
 
 import { prisma } from '@/lib/db';
 
+
+
 export async function getTasks() {
   return await prisma.task.findMany({
     include: {
-      employee: {
-        select: {
-          name: true,
-        },
-      },
-      requirement: {
-        select: {
-          title: true,
-        },
-      },
+      employee: true,
+      requirement: true,
     },
     orderBy: {
       createdAt: 'desc',

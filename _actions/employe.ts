@@ -1,36 +1,35 @@
-'use server';
+"use server";
 
-import { prisma } from '@/lib/db';
-import { revalidatePath } from 'next/cache';
-import { z } from 'zod';
+import { prisma } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 export type EmployeeFormState = {
-    errors?: {
-      name?: string[];
-      email?: string[];
-      position?: string[];
-      department?: string[];
-      description?: string[];
-      _form?: string[];
-    };
-    message?: string | null;
+  errors?: {
+    name?: string[];
+    email?: string[];
+    position?: string[];
+    department?: string[];
+    description?: string[];
+    _form?: string[];
+  };
+  message?: string | null;
 };
 
 const employeeSchema = z.object({
-    name: z.string().min(3),
-    email: z.string().email(),
-    position: z.string().min(3),
-    department: z.string().min(3),
+  name: z.string().min(3),
+  email: z.string().email(),
+  position: z.string().min(3),
+  department: z.string().min(3),
 });
-
 
 export async function getEmployees() {
   try {
     return await prisma.employee.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
-  } catch (error) {
-    throw new Error('Failed to fetch employees');
+  } catch {
+    throw new Error("Failed to fetch employees");
   }
 }
 
@@ -40,27 +39,30 @@ export async function deleteEmployee(id: string) {
       where: { id },
     });
 
-    revalidatePath('/employees');
-    return { message: 'Employee deleted successfully' };
-  } catch (error) {
+    revalidatePath("/employees");
+    return { message: "Employee deleted successfully" };
+  } catch {
     return {
-      message: 'Database Error: Failed to delete employee.',
+      message: "Database Error: Failed to delete employee.",
     };
   }
 }
 
-export async function createEmployee(prevState: EmployeeFormState, formData: FormData) {
+export async function createEmployee(
+  prevState: EmployeeFormState,
+  formData: FormData
+) {
   const validatedFields = employeeSchema.safeParse({
-    name: formData.get('name'),
-    email: formData.get('email'),
-    position: formData.get('position'),
-    department: formData.get('department'),
+    name: formData.get("name"),
+    email: formData.get("email"),
+    position: formData.get("position"),
+    department: formData.get("department"),
   });
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Invalid fields',
+      message: "Invalid fields",
     };
   }
 
@@ -74,11 +76,11 @@ export async function createEmployee(prevState: EmployeeFormState, formData: For
       },
     });
 
-    revalidatePath('/employees');
-    return { message: 'Employee created successfully' };
-  } catch (error) {
+    revalidatePath("/employees");
+    return { message: "Employee created successfully" };
+  } catch {
     return {
-      message: 'Database Error: Failed to create employee.',
+      message: "Database Error: Failed to create employee.",
     };
   }
 }
@@ -89,16 +91,16 @@ export async function updateEmployee(
   formData: FormData
 ): Promise<EmployeeFormState> {
   const validatedFields = employeeSchema.safeParse({
-    name: formData.get('name'),
-    email: formData.get('email'),
-    position: formData.get('position'),
-    department: formData.get('department'),
+    name: formData.get("name"),
+    email: formData.get("email"),
+    position: formData.get("position"),
+    department: formData.get("department"),
   });
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Employee.',
+      message: "Missing Fields. Failed to Update Employee.",
     };
   }
 
@@ -107,9 +109,9 @@ export async function updateEmployee(
       where: { id },
       data: validatedFields.data,
     });
-    revalidatePath('/employees');
-    return { message: 'Updated Employee.' };
-  } catch (error) {
-    return { message: 'Database Error: Failed to Update Employee.' };
+    revalidatePath("/employees");
+    return { message: "Updated Employee." };
+  } catch {
+    return { message: "Database Error: Failed to Update Employee." };
   }
 }

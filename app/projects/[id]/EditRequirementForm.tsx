@@ -36,8 +36,10 @@ export default function EditRequirementForm({
     try {
       await updateRequirement(requirement.id, {
         title: title.trim(),
-        description: description.trim() || null,
+        description: description.trim(),
         priority,
+        status: requirement.status, // Add the status field
+        projectId: requirement.projectId, // Add the projectId field
       });
       toast.success('Requirement updated successfully');
       onUpdate();
