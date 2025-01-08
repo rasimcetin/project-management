@@ -1,22 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { getTask, updateTask } from '@/_actions/task';
 
-export default function EditTaskPage({ params }: { params: { id: string } }) {
-  const { id: taskId } = params;
+export default function EditTaskPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const taskId = resolvedParams.id;
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [task, setTask] = useState<any>(null);
 
   useEffect(() => {
     async function fetchTask() {
-      const taskData = await getTask(taskId);
-      setTask(taskData);
+      try {
+        const taskData = await getTask(taskId);
+        setTask(taskData);
+      } catch (error) {
+        console.error('Failed to fetch task:', error);
+      }
     }
     fetchTask();
-  }, [params.id]);
+  }, [taskId]);
 
   if (!task) {
     return <div>Loading...</div>;
@@ -38,7 +43,7 @@ export default function EditTaskPage({ params }: { params: { id: string } }) {
         actual: parseInt(formData.get('actual') as string),
         employeeId: formData.get('employeeId') as string,
       };
-      await updateTask(params.id, data);
+      await updateTask(taskId, data);
       router.push('/tasks');
       router.refresh();
     } catch (error) {
