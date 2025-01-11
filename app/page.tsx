@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getProjects } from '../_actions/project';
 import { getEmployees } from '../_actions/employe';
+import { getTasks } from '../_actions/task';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'; 
 import { PlusCircle, FolderKanban, Clock, ArrowRight, PlusIcon } from 'lucide-react';
@@ -22,6 +23,21 @@ type Employee = {
   position: string;
   department: string;
   createdAt: Date;
+};
+
+type Task = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  priority: string;
+  duration: number;
+  startDate: Date;
+  endDate: Date;
+  estimate: number;
+  actual: number;
+  createdAt: Date;
+  employee: Employee;
 };
 
 function ProjectSkeleton() {
@@ -55,6 +71,27 @@ function EmployeeSkeleton() {
       </CardHeader>
       <CardContent>
         <Skeleton className="h-4 w-32" />
+      </CardContent>
+    </Card>
+  );
+}
+
+function TaskSkeleton() {
+  return (
+    <Card className="h-full">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-10 rounded-lg" />
+          <Skeleton className="h-6 w-48" />
+        </div>
+        <Skeleton className="mt-2 h-4 w-full" />
+        <Skeleton className="mt-1 h-4 w-2/3" />
+      </CardHeader>
+      <CardContent>
+        <div className="flex gap-2">
+          <Skeleton className="h-6 w-20" />
+          <Skeleton className="h-6 w-20" />
+        </div>
       </CardContent>
     </Card>
   );
@@ -140,9 +177,36 @@ function EmployeeCard({ employee }: { employee: Employee }) {
   );
 }
 
+function TaskCard({ task }: { task: Task }) {
+  return (
+    <Link key={task.id} href={`/tasks/${task.id}`}>
+      <Card className="h-full transition-colors hover:bg-muted/50">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Clock className="h-10 w-10 rounded-lg border p-2" />
+            <CardTitle className="line-clamp-1">{task.title}</CardTitle>
+          </div>
+          <CardDescription className="line-clamp-2">{task.description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Badge variant={task.status === 'COMPLETED' ? 'default' : 'secondary'}>
+              {task.status.replace('_', ' ')}
+            </Badge>
+            <Badge variant={task.priority === 'HIGH' ? 'destructive' : 'outline'}>
+              {task.priority}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
 export default async function Home() {
   const projects: Project[] = await getProjects();
   const employees: Employee[] = await getEmployees();
+  const tasks: Task[] = await getTasks();
 
   return (
     <div className="space-y-12 p-6">
@@ -201,6 +265,36 @@ export default async function Home() {
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {employees.map((employee) => (
               <EmployeeCard key={employee.id} employee={employee} />
+            ))}
+          </div>
+        </Suspense>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">Tasks</h1>
+            <p className="mt-2 text-lg text-gray-600">View and manage your tasks.</p>
+          </div>
+          <Link
+            href="/tasks/new"
+            className="block rounded-md bg-orange-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          >
+            <PlusIcon className="h-5 w-5 inline-block mr-1" />
+            New Task
+          </Link>
+        </div>
+
+        <Suspense fallback={
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <TaskSkeleton key={i} />
+            ))}
+          </div>
+        }>
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {tasks.slice(0, 6).map((task) => (
+              <TaskCard key={task.id} task={task} />
             ))}
           </div>
         </Suspense>
